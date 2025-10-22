@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pterodactyl Panel Creator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>⚙️ Create Pterodactyl Server</h1>
+      <form id="createForm">
+        <label>Mode Panel</label>
+        <select name="mode" required>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
+
+        <label>Secret Key</label>
+        <input type="text" name="secret" placeholder="Masukkan Secret Key" required />
+
+        <label>Nama Server</label>
+        <input type="text" name="name" placeholder="Nama server kamu" required />
+
+        <label>Pilih RAM</label>
+        <select name="ram" required>
+          <option value="1">1 GB</option>
+          <option value="2">2 GB</option>
+          <option value="3">3 GB</option>
+          <option value="4">4 GB</option>
+          <option value="5">5 GB</option>
+          <option value="6">6 GB</option>
+          <option value="7">7 GB</option>
+          <option value="8">8 GB</option>
+          <option value="9">9 GB</option>
+          <option value="0">Unlimited</option>
+        </select>
+
+        <button type="submit">Buat Server</button>
+      </form>
+
+      <div id="status"></div>
+    </div>
+
+    <script>
+      document.getElementById("createForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        const status = document.getElementById("status");
+        status.textContent = "⏳ Membuat server...";
+
+        try {
+          const res = await fetch("/api/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const json = await res.json();
+          if (json.success) {
+            status.innerHTML = `<p class='success'>✅ ${json.message}</p>`;
+          } else {
+            status.innerHTML = `<p class='error'>❌ ${json.error || "Terjadi kesalahan"}</p>`;
+          }
+        } catch (err) {
+          status.innerHTML = `<p class='error'>🚫 Gagal terhubung ke server.</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>
